@@ -49,4 +49,11 @@ TEST(FileSystem, file_add_entry){
   ASSERT_THROW(file->addEntry(folder1), string);
   ASSERT_THROW(file->numEntries(), string);
 }
+TEST(FileSystem, link){
+  File *file = new File("NewDir/dir.cpp");
+  Node *link = new Link("NewDir/lnf1",file);
+  ASSERT_EQ(258,link->getCharCount());
+  ASSERT_EQ("NewDir/lnf1",link->name());
+
+}
 #endif

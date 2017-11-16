@@ -14,6 +14,29 @@ public:
   virtual int numEntries() = 0;
 };
 
+class Link : public Node {
+public:
+  Link(string const &  s,Node *source):_name(s),_source(source){
+    if (stat(name().c_str(), &_st) != 0)
+         throw string("file does not exist");
+
+  }
+  string name() const {return _name;}
+  int getCharCount() const {
+    return _source->getCharCount();
+  }
+  void addEntry(Node * n){
+    throw string("unable to add entry to a file");
+  }
+  int numEntries(){
+    throw string("illegal action");
+  }
+
+private:
+  string _name;
+  struct stat _st;
+  Node * _source;
+};
 
 class File : public Node {
 public:
