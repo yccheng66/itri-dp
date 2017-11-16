@@ -8,17 +8,24 @@ using std::string;
 
 class Node {
 public:
+  Node(string const & nodeName):_name(nodeName){
+    if (stat(_name.c_str(), &_st) != 0)
+         throw string("file does not exist");
+  }
   virtual string name() const = 0;
   virtual int getCharCount() const = 0;
   virtual void addEntry(Node * n) = 0;
   virtual int numEntries() = 0;
+protected:
+  string _name;
+  struct stat _st;
 };
 
 class Link : public Node {
 public:
-  Link(string const &  linkname,Node *source):_name(linkname),_source(source){
-    if (stat(name().c_str(), &_st) != 0)
-         throw string("file does not exist");
+  Link(string const &  linkname,Node *source):Node(linkname),_source(source){
+    //if (stat(name().c_str(), &_st) != 0)
+    //       throw string("file does not exist");
 
   }
   string name() const {return _name;}
@@ -33,16 +40,16 @@ public:
   }
 
 private:
-  string _name;
-  struct stat _st;
+  //string _name;
+
   Node * _source;
 };
 
 class File : public Node {
 public:
-  File(string const &  s):_name(s){
-    if (stat(name().c_str(), &_st) != 0)
-         throw string("file does not exist");
+  File(string const &  s):Node(s){
+    //if (stat(name().c_str(), &_st) != 0)
+  //       throw string("file does not exist");
   }
   string name() const {return _name;}
   int getCharCount() const {
@@ -55,16 +62,16 @@ public:
     throw string("illegal action");
   }
 
-private:
-  string _name;
-  struct stat _st;
+//private:
+  //string _name;
+  //struct stat _st;
 };
 
 #include <dirent.h>
 
 class Directory : public Node {
 public:
-  Directory(string const & s):_name(s) {
+  Directory(string const & s):Node(s) {
     if ((_dp =  opendir(_name.c_str())) == NULL)
       throw string("directory does not exit");
   }
@@ -79,7 +86,7 @@ public:
     return _children.size();
   }
 private:
-  string _name;
+  //string _name;
   DIR * _dp;
   std::vector<Node *> _children;
 };
