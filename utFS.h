@@ -33,13 +33,20 @@ TEST(FileSystem, node_directory) {
   ASSERT_THROW(node->getCharCount(), string);
 }
 
-TEST(FileSystem, directory_aggregate) {
+TEST(FileSystem, directory_add_entry) {
   Node *dir = new Directory("NewDir");
   Node *folder1 = new Directory("NewDir/folder1");
   Node *file = new File("NewDir/dir.cpp");
   dir->addEntry(folder1);
+  ASSERT_EQ(1, dir->numEntries());
   dir->addEntry(file);
+  ASSERT_EQ(2, dir->numEntries());
+}
 
-
+TEST(FileSystem, file_add_entry){
+  Node *file = new File("NewDir/dir.cpp");
+  Node *folder1 = new Directory("NewDir/folder1");
+  ASSERT_THROW(file->addEntry(folder1), string);
+  ASSERT_THROW(file->numEntries(), string);
 }
 #endif
