@@ -16,7 +16,7 @@ public:
 
 class Link : public Node {
 public:
-  Link(string const &  s,Node *source):_name(s),_source(source){
+  Link(string const &  linkname,Node *source):_name(linkname),_source(source){
     if (stat(name().c_str(), &_st) != 0)
          throw string("file does not exist");
 
