@@ -21,29 +21,6 @@ protected:
   struct stat _st;
 };
 
-class Link : public Node {
-public:
-  Link(string const &  linkname,Node *source):Node(linkname),_source(source){
-    //if (stat(name().c_str(), &_st) != 0)
-    //       throw string("file does not exist");
-
-  }
-  string name() const {return _name;}
-  int getCharCount() const {
-    return _source->getCharCount();
-  }
-  void addEntry(Node * n){
-    throw string("unable to add entry to a file");
-  }
-  int numEntries(){
-    throw string("illegal action");
-  }
-
-private:
-  //string _name;
-
-  Node * _source;
-};
 
 class File : public Node {
 public:
@@ -67,27 +44,4 @@ public:
   //struct stat _st;
 };
 
-#include <dirent.h>
-
-class Directory : public Node {
-public:
-  Directory(string const & s):Node(s) {
-    if ((_dp =  opendir(_name.c_str())) == NULL)
-      throw string("directory does not exit");
-  }
-  string name() const {return _name;}
-  int getCharCount() const {
-    throw string("is a directory");
-  }
-  void addEntry(Node * n){
-    _children.push_back(n);
-  }
-  int numEntries(){
-    return _children.size();
-  }
-private:
-  //string _name;
-  DIR * _dp;
-  std::vector<Node *> _children;
-};
 #endif
