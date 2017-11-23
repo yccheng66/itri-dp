@@ -3,7 +3,7 @@
 #include <string>
 #include <fstream>
 #include <sys/stat.h>
-
+#include "iterator.h"
 using std::string;
 
 class Node {
@@ -17,6 +17,10 @@ public:
   // we decided to include ops for Directory in interface
   virtual void addEntry(Node * n) = 0;
   virtual int numEntries() = 0;
+  virtual Iterator<Node *> *createIterator() {
+    return new NullIterator<Node *>;
+  };
+
 protected:
   string _name;
   struct stat _st;

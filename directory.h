@@ -2,6 +2,7 @@
 #define DIRECTORY_H
 #include "node.h"
 #include "link.h"
+#include "iterator.h"
 #include <dirent.h>
 
 
@@ -9,7 +10,8 @@
 class Directory : public Node {
 
 public:
-  class DirectoryIterator{
+  template<class Item>
+  class DirectoryIterator:public Iterator<Item>{
   public:
     DirectoryIterator(Directory *dir):_dir(dir){
 
@@ -17,7 +19,7 @@ public:
     void first(){
       _current = 0;
     }
-    Node *currentItem() const {
+    Item currentItem() const {
       return _dir->getEntry(_current);
     };
     void next() {
@@ -64,8 +66,8 @@ public:
       throw string("chdir error");
     sort(_children.begin(), _children.end(), [](Node* a, Node * b){return a->name() < b->name();});
   }
-  DirectoryIterator *createIterator(){
-    return new DirectoryIterator(this);
+  Iterator<Node *> *createIterator(){
+    return new DirectoryIterator<Node *>(this);
   }
 private:
   //string _name;

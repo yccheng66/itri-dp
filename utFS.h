@@ -88,7 +88,7 @@ TEST_F(FileSystem, directoryGivenName) {
 TEST_F(FileSystem, directoryIterator) {
   Directory *dir = new Directory("NewDir");
   dir->populateEntries();
-  Directory::DirectoryIterator *it = dir->createIterator();
+  Iterator<Node *> *it = dir->createIterator();
   it->first();
   ASSERT_EQ(".", it->currentItem()->name());
   it->next();
@@ -106,4 +106,13 @@ TEST_F(FileSystem, directoryIterator) {
   it->next();
   ASSERT_TRUE(it->isDone());
 }
+
+TEST_F(FileSystem, nullIteratorOnFile) {
+  Node *node = new File("utFS.cpp");
+  Iterator<Node *> *it = node->createIterator();
+  ASSERT_TRUE(it->isDone());
+  it->first();
+  ASSERT_EQ(nullptr, it->currentItem());
+}
+
 #endif
