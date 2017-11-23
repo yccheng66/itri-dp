@@ -4,6 +4,7 @@
 #include "directory.h"
 #include "link.h"
 #include "directory_builder.h"
+#include "level_iterator.h"
 
 class FileSystem : public ::testing::Test {
 protected:
@@ -133,5 +134,73 @@ TEST_F(FileSystem, directoryBuilder){
   ASSERT_EQ("lnlnf1", dir->getEntry(6)->name());
 }
 
+TEST_F(FileSystem, fullDirectoryBuilder) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory *dir = db.getDirectory();
 
+  Iterator<Node *> *it = dir->createIterator();
+  it->first();
+  ASSERT_EQ(".", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("..", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("dir.cpp", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("folder1", it->currentItem()->name());
+
+  Iterator<Node *> *it2 = it->currentItem()->createIterator();
+  it2->first();
+  ASSERT_EQ(".", it2->currentItem()->name());
+  it2->next();
+  ASSERT_EQ("..", it2->currentItem()->name());
+  it2->next();
+  ASSERT_EQ("file2", it2->currentItem()->name());
+  it2->next();
+  ASSERT_EQ("lnf2", it2->currentItem()->name());
+
+  it->next();
+  ASSERT_EQ("lnd1", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnf1", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnlnf1", it->currentItem()->name());
+  it->next();
+  ASSERT_TRUE(it->isDone());
+}
+
+TEST_F(FileSystem, levelIterator) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory *dir = db.getDirectory();
+
+  Iterator<Node *> *it = new LevelIterator<Node *>(dir);
+  it->first();
+  ASSERT_EQ(".", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("..", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("dir.cpp", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("folder1", it->currentItem()->name());
+
+  it->next();
+  ASSERT_EQ("lnd1", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnf1", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnlnf1", it->currentItem()->name());
+  it->next();
+
+  ASSERT_EQ(".", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("..", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("file2", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnf2", it->currentItem()->name());
+  it->next();
+
+  ASSERT_TRUE(it->isDone());
+}
 #endif

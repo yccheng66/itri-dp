@@ -23,7 +23,18 @@ private:
         if (entry->d_type == DT_REG)
           _dir->addEntry(new File(entry->d_name));
         else if (entry->d_type == DT_DIR)
-          _dir->addEntry(new Directory(entry->d_name));
+        {
+          string dir_name(entry->d_name);
+          if (dir_name == "." || dir_name == "..") {
+            _dir->addEntry(new Directory(entry->d_name));
+          }
+          else {
+            DirectoryBuilder db;
+            db.buildDirectory(entry->d_name);
+            Directory *dir = db.getDirectory();
+            _dir->addEntry(dir);
+          }
+        }
         else if (entry->d_type == DT_LNK)
           _dir->addEntry(new Link(entry->d_name, nullptr));
       }
