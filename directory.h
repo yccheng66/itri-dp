@@ -4,7 +4,33 @@
 #include "link.h"
 #include <dirent.h>
 
+
+
 class Directory : public Node {
+
+public:
+  class DirectoryIterator{
+  public:
+    DirectoryIterator(Directory *dir):_dir(dir){
+
+    }
+    void first(){
+      _current = 0;
+    }
+    Node *currentItem() const {
+      return _dir->getEntry(_current);
+    };
+    void next() {
+      _current ++;
+    }
+    bool isDone() const {
+      return _current >= _dir->numEntries();
+    }
+  private:
+    Directory *_dir;
+    int _current;
+  };
+
 public:
   Directory(string const & s):Node(s) {
     if ((_dp =  opendir(_name.c_str())) == NULL)
@@ -37,6 +63,9 @@ public:
     else
       throw string("chdir error");
     sort(_children.begin(), _children.end(), [](Node* a, Node * b){return a->name() < b->name();});
+  }
+  DirectoryIterator *createIterator(){
+    return new DirectoryIterator(this);
   }
 private:
   //string _name;

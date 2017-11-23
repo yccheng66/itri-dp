@@ -14,6 +14,7 @@ public:
   }
   virtual string name() const = 0;
   virtual int getCharCount() const = 0;
+  // we decided to include ops for Directory in interface
   virtual void addEntry(Node * n) = 0;
   virtual int numEntries() = 0;
 protected:
