@@ -3,6 +3,7 @@
 #include "node.h"
 #include "directory.h"
 #include "link.h"
+#include "directory_builder.h"
 
 class FileSystem : public ::testing::Test {
 protected:
@@ -74,8 +75,10 @@ TEST_F(FileSystem, link){
 }
 
 TEST_F(FileSystem, directoryGivenName) {
-  Directory *dir = new Directory("NewDir");
-  dir->populateEntries();
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory *dir = db.getDirectory();
+
   ASSERT_EQ(".", dir->getEntry(0)->name());
   ASSERT_EQ("..", dir->getEntry(1)->name());
   ASSERT_EQ("dir.cpp", dir->getEntry(2)->name());
@@ -86,8 +89,10 @@ TEST_F(FileSystem, directoryGivenName) {
 }
 
 TEST_F(FileSystem, directoryIterator) {
-  Directory *dir = new Directory("NewDir");
-  dir->populateEntries();
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory *dir = db.getDirectory();
+
   Iterator<Node *> *it = dir->createIterator();
   it->first();
   ASSERT_EQ(".", it->currentItem()->name());
@@ -114,5 +119,19 @@ TEST_F(FileSystem, nullIteratorOnFile) {
   it->first();
   ASSERT_EQ(nullptr, it->currentItem());
 }
+
+TEST_F(FileSystem, directoryBuilder){
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory *dir = db.getDirectory();
+  ASSERT_EQ(".", dir->getEntry(0)->name());
+  ASSERT_EQ("..", dir->getEntry(1)->name());
+  ASSERT_EQ("dir.cpp", dir->getEntry(2)->name());
+  ASSERT_EQ("folder1", dir->getEntry(3)->name());
+  ASSERT_EQ("lnd1", dir->getEntry(4)->name());
+  ASSERT_EQ("lnf1", dir->getEntry(5)->name());
+  ASSERT_EQ("lnlnf1", dir->getEntry(6)->name());
+}
+
 
 #endif

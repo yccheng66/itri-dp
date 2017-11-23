@@ -51,20 +51,11 @@ public:
   Node* getEntry(int index) {
     return _children[index];
   }
-  void populateEntries() {
-    struct dirent * entry = nullptr;
-    if (0 == chdir(name().c_str()))
-      while ((entry = readdir(_dp)) != nullptr) {
-        if (entry->d_type == DT_REG)
-          addEntry(new File(entry->d_name));
-        else if (entry->d_type == DT_DIR)
-          addEntry(new Directory(entry->d_name));
-        else if (entry->d_type == DT_LNK)
-          addEntry(new Link(entry->d_name, nullptr));
-      }
-    else
-      throw string("chdir error");
-    sort(_children.begin(), _children.end(), [](Node* a, Node * b){return a->name() < b->name();});
+  DIR* getDp(){
+    return _dp;
+  }
+  std::vector<Node *> & getChildren(){
+    return _children;
   }
   Iterator<Node *> *createIterator(){
     return new DirectoryIterator<Node *>(this);
