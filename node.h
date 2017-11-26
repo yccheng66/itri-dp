@@ -8,7 +8,7 @@ using std::string;
 
 class Node {
 public:
-  Node(string const & nodeName):_name(nodeName){
+  Node(string const & nodeName):_name(nodeName), _parent(nullptr){
     if (stat(_name.c_str(), &_st) != 0)
          throw string("file does not exist");
   }
@@ -20,10 +20,12 @@ public:
   virtual Iterator<Node *> *createIterator() {
     return new NullIterator<Node *>;
   };
-
+  Node * getParent() const {return _parent;}
+  void setParent (Node * parent) {_parent = parent;}
 protected:
   string _name;
   struct stat _st;
+  Node * _parent;
 };
 
 

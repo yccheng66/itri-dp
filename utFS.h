@@ -203,4 +203,88 @@ TEST_F(FileSystem, levelIterator) {
 
   ASSERT_TRUE(it->isDone());
 }
+
+
+TEST_F(FileSystem, Link_pathToSource) {
+  Link *link = new Link("NewDir/lnf1");
+  ASSERT_EQ("NewDir/lnf1",link->name());
+  ASSERT_EQ("dir.cpp", link->pathToSource("./")[0]);
+  Link *link2 = new Link("NewDir/folder1/lnf2");
+  ASSERT_EQ("..", link2->pathToSource("./")[0]);
+  ASSERT_EQ("dir.cpp", link2->pathToSource("./")[1]);
+}
+
+TEST_F(FileSystem, DirectoryBuilder_makeOneLinkToSource) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory * dir = db.getDirectory();
+
+  Iterator<Node *> * it = new LevelIterator<Node *>(dir);
+  it->first();
+  ASSERT_EQ(".", it->currentItem()->name()); it->next();
+  ASSERT_EQ("..", it->currentItem()->name()); it->next();
+  ASSERT_EQ("dir.cpp", it->currentItem()->name());
+  ASSERT_EQ(258, it->currentItem()->getCharCount()); it->next();
+  ASSERT_EQ("folder1", it->currentItem()->name()); it->next();
+  ASSERT_EQ("lnd1", it->currentItem()->name());
+  db.makeOneLinkToSource(dynamic_cast<Link *>(it->currentItem()));
+  it->next();
+  ASSERT_EQ("lnf1", it->currentItem()->name());
+  db.makeOneLinkToSource(dynamic_cast<Link *>(it->currentItem()));
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_EQ("lnlnf1", it->currentItem()->name());
+  db.makeOneLinkToSource(dynamic_cast<Link *>(it->currentItem()));
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_EQ(".", it->currentItem()->name()); it->next();
+  ASSERT_EQ("..", it->currentItem()->name()); it->next();
+  ASSERT_EQ("file2", it->currentItem()->name()); it->next();
+  ASSERT_EQ("lnf2", it->currentItem()->name());
+  db.makeOneLinkToSource(dynamic_cast<Link *>(it->currentItem()));
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_TRUE(it->isDone());
+}
+
+
+TEST_F(FileSystem, LinkConnector) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory * dir = db.getDirectory();
+  ASSERT_TRUE(db.connectLinksToSources());
+  Iterator<Node *> * it = new LevelIterator<Node *>(dir);
+  it->first();
+  ASSERT_EQ(".", it->currentItem()->name()); it->next();
+  ASSERT_EQ("..", it->currentItem()->name()); it->next();
+  ASSERT_EQ("dir.cpp", it->currentItem()->name());
+  ASSERT_EQ(258, it->currentItem()->getCharCount()); it->next();
+  ASSERT_EQ("folder1", it->currentItem()->name()); it->next();
+  ASSERT_EQ("lnd1", it->currentItem()->name());
+  it->next();
+  ASSERT_EQ("lnf1", it->currentItem()->name());
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_EQ("lnlnf1", it->currentItem()->name());
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_EQ(".", it->currentItem()->name()); it->next();
+  ASSERT_EQ("..", it->currentItem()->name()); it->next();
+  ASSERT_EQ("file2", it->currentItem()->name()); it->next();
+  ASSERT_EQ("lnf2", it->currentItem()->name());
+  ASSERT_EQ(258, it->currentItem()->getCharCount());
+  it->next();
+  ASSERT_TRUE(it->isDone());
+}
+
+TEST_F(FileSystem, CharCountVisitor) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory * dir = db.getDirectory();
+  ASSERT_TRUE(db.connectLinksToSources());
+  CharCountVisitor cv;
+  dir->accept(cv);
+  ASSERT_EQ(258*5, cv.getResult());
+}
+
 #endif
