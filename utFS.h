@@ -277,14 +277,4 @@ TEST_F(FileSystem, LinkConnector) {
   ASSERT_TRUE(it->isDone());
 }
 
-TEST_F(FileSystem, CharCountVisitor) {
-  DirectoryBuilder db;
-  db.buildDirectory("NewDir");
-  Directory * dir = db.getDirectory();
-  ASSERT_TRUE(db.connectLinksToSources());
-  CharCountVisitor cv;
-  dir->accept(cv);
-  ASSERT_EQ(258*5, cv.getResult());
-}
-
 #endif
