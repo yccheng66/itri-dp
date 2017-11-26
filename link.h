@@ -37,6 +37,7 @@ public:
   }
 
   void setSource(Node * src) { _source = src;}
+  Node * getSource() const {return _source;}
 
   string sourceName(string const & prefix) const {
       char buf[1024];
@@ -47,7 +48,7 @@ public:
         throw string("link source does not exist");
       return string(buf);
     }
-
+  void accept(Visitor & visitor) {visitor.visit(this);}
 private:
   //string _name;
   Node * _source;

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include "iterator.h"
+#include "visitor.h"
 using std::string;
 
 class Node {
@@ -22,6 +23,8 @@ public:
   };
   Node * getParent() const {return _parent;}
   void setParent (Node * parent) {_parent = parent;}
+
+  virtual void accept(Visitor & visitor) = 0;
 protected:
   string _name;
   struct stat _st;
@@ -45,6 +48,7 @@ public:
   int numEntries(){
     throw string("illegal action");
   }
+  void accept(Visitor & visitor) {visitor.visit(this);}
 
 //private:
   //string _name;

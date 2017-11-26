@@ -5,10 +5,7 @@
 #include "iterator.h"
 #include <dirent.h>
 
-
-
 class Directory : public Node {
-
 public:
   template<class Item>
   class DirectoryIterator:public Iterator<Item>{
@@ -61,6 +58,8 @@ public:
   Iterator<Node *> *createIterator(){
     return new DirectoryIterator<Node *>(this);
   }
+  void accept(Visitor & visitor) {visitor.visit(this);}
+
 private:
   //string _name;
   DIR * _dp;

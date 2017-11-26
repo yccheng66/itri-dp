@@ -43,7 +43,7 @@ public:
     return _itq->empty();
   }
 
-  //~LevelIterator() {delete _itq;}
+  ~LevelIterator() {delete _itq;}
 private:
   Directory *_dir;
   std::queue<Iterator<Item> *> *_itq;

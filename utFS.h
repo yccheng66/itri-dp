@@ -5,6 +5,7 @@
 #include "link.h"
 #include "directory_builder.h"
 #include "level_iterator.h"
+#include "char_count_visitor.h"
 
 class FileSystem : public ::testing::Test {
 protected:
@@ -275,6 +276,47 @@ TEST_F(FileSystem, LinkConnector) {
   ASSERT_EQ(258, it->currentItem()->getCharCount());
   it->next();
   ASSERT_TRUE(it->isDone());
+}
+
+TEST_F(FileSystem, CharCountVisitor) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory * dir = db.getDirectory();
+  ASSERT_TRUE(db.connectLinksToSources());
+  CharCountVisitor cv;
+  dir->accept(cv);
+  // dir.cpp counted five times, file2 counted twice
+  ASSERT_EQ(258*5+6*2, cv.getResult());
+}
+
+TEST_F(FileSystem, suffixVisitor) {
+  DirectoryBuilder db;
+  db.buildDirectory("NewDir");
+  Directory * dir = db.getDirectory();
+  ASSERT_TRUE(db.connectLinksToSources());
+  SuffixVisitor sv;
+  Iterator<Node *> * it = dir->createIterator();
+  it->first();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("./", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("../", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("dir.cpp", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("folder1/", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("lnd1@", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("lnf1@", sv.getResult());
+  it->next();
+  it->currentItem()->accept(sv);
+  ASSERT_EQ("lnlnf1@", sv.getResult());
 }
 
 #endif
