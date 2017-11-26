@@ -14,8 +14,6 @@ When coding in class, I will use the editor [Atom](https://atom.io), which comes
 ### Preliminaries
 Some useful function regarding files and directories in unix:
 
-or
-
 ```c++
 #include <sys/stat.h>
 ...

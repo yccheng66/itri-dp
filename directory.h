@@ -44,6 +44,7 @@ public:
   }
   void addEntry(Node * n){
     _children.push_back(n);
+    n->setParent(this);
   }
   int numEntries(){
     return _children.size();
